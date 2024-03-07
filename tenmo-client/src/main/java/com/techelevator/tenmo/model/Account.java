@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public class Account {
 
+    // THIS IS SUPER IMPORTANT
+    public Account(){}
     public Account(int id, int userId, BigDecimal balance){
         this.id = id;
         this.userId = userId;

@@ -19,13 +19,11 @@ import java.util.List;
 @RequestMapping(path = "/account")
 public class AccountController {
 
-    private final TokenProvider tokenProvider;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
     private AccountDao accountDao;
 
     public AccountController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, AccountDao accountDao) {
-        this.tokenProvider = tokenProvider;
-        this.authenticationManagerBuilder = authenticationManagerBuilder;
+
         this.accountDao = accountDao;
     }
 

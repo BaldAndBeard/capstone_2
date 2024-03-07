@@ -14,6 +14,9 @@ public class Transfer {
 
     private double amount;
 
+    // THIS IS SUPER IMPORTANT
+    public Transfer(){}
+
     public Transfer (int transferId, int transferTypeId, int transferStatusId, int accountFrom, int accountTo, double amount) {
         this.transferId = transferId;
         this.transferTypeId = transferTypeId;
