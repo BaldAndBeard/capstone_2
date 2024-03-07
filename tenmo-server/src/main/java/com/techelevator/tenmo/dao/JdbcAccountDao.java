@@ -21,12 +21,13 @@ public class JdbcAccountDao implements AccountDao{
     public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-
+// GETS THE USER ACCOUNT BY ITS ID FROM THE DATABASE IN THE ACCOUNT TABLE
     @Override
     public Account getAccountById(int id) {
         Account account = null;
         String sql = "SELECT account_id, user_id, balance FROM account WHERE account_id = ?";
         try {
+            //RESULTS = ROW OF INFO, CONTAINING account_id, user_id, balance, from the account table
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
             if (results.next()) {
                 account = mapRowToAccount(results);

@@ -26,7 +26,7 @@ public class AccountController {
     }
 
     // Get a list of all accounts
-    @PreAuthorize("permitAll")
+
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<Account> list() {
 
