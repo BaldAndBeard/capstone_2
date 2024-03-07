@@ -53,9 +53,6 @@ public class App {
         System.out.println("Please register a new user account");
         UserCredentials credentials = consoleService.promptForCredentials();
         if (authenticationService.register(credentials)) {
-            // Created a new account tied to the new user
-            currentUser = authenticationService.login(credentials);
-            accountService.createAccount(new Account(currentUser.getUser().getId(), 1000.0));
 
             System.out.println("Registration successful. You can now login.");
         } else {
@@ -66,6 +63,13 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
+
+        // Obtain auth token from current user and assign it to the account service for communication
+        String token = currentUser.getToken();
+        if (token != null) {
+            accountService.setAuthToken(token);
+        }
+
         if (currentUser == null) {
             consoleService.printErrorMessage();
         }

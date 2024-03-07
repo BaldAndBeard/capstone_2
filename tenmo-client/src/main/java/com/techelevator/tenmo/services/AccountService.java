@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class AccountService {
 
-    public static final String API_BASE_URL = "http://localhost:8080";
+    public static final String API_BASE_URL = "http://localhost:8080/account";
     private RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
@@ -19,7 +19,8 @@ public class AccountService {
 
     }
 
-    public Account getAccount(int id) {
+
+    public Account getAccountByID(int id) {
         Account account = null;
 
         try {
@@ -34,16 +35,16 @@ public class AccountService {
     }
     // Define the url path for finding by userID
     public Account getAccountbyUserID(int userID) {
-        Account accountByUserID = null;
+        Account[] accountByUserID = null;
 
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "?user_id=" + userID, HttpMethod.GET, makeAuthEntity(), Account.class);
+            ResponseEntity<Account[]> response = restTemplate.exchange(API_BASE_URL + "?user_id=" + userID, HttpMethod.GET, makeAuthEntity(), Account[].class);
             accountByUserID = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
 
-        return accountByUserID;
+        return accountByUserID[0];
     }
     public Account updateAccount(Account accountToUpdate ) {
         Account updatedAccount = null;
@@ -82,14 +83,14 @@ public class AccountService {
 
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-        //headers.setBearerAuth(authToken);
+        headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
     }
 
     private HttpEntity<Account> makeAccountEntity(Account account) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-       // headers.setBearerAuth(authToken);
+        headers.setBearerAuth(authToken);
         return new HttpEntity<>(account, headers);
     }
 

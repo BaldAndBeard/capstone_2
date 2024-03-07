@@ -8,12 +8,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class JdbcAccountDao implements AccountDao{
     private final JdbcTemplate jdbcTemplate;
     private static final BigDecimal STARTING_BALANCE = new BigDecimal("1000.00");
@@ -108,5 +113,7 @@ public class JdbcAccountDao implements AccountDao{
         //account.setAuthorities("USER");
         return account;
     }
+
+
 
 }
