@@ -1,9 +1,13 @@
 package com.techelevator.tenmo;
 
+import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
+import com.techelevator.tenmo.services.TransferService;
 
 public class App {
 
@@ -11,6 +15,9 @@ public class App {
 
     private final ConsoleService consoleService = new ConsoleService();
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
+    private final AccountService accountService = new AccountService();
+    private final TransferService transferService = new TransferService();
+
 
     private AuthenticatedUser currentUser;
 
@@ -46,6 +53,10 @@ public class App {
         System.out.println("Please register a new user account");
         UserCredentials credentials = consoleService.promptForCredentials();
         if (authenticationService.register(credentials)) {
+            // Created a new account tied to the new user
+            currentUser = authenticationService.login(credentials);
+            accountService.createAccount(new Account(currentUser.getUser().getId(), 1000.0));
+
             System.out.println("Registration successful. You can now login.");
         } else {
             consoleService.printErrorMessage();
@@ -86,6 +97,10 @@ public class App {
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
+        Account userAccount = accountService.getAccountbyUserID(currentUser.getUser().getId());
+        System.out.println("**********************");
+        System.out.println("Your current balance is: " + userAccount.getBalance());
+        System.out.println("**********************");
 		
 	}
 

@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 public class AccountService {
 
-    public static final String API_BASE_URL = "http://localhost:8080/Account/";
+    public static final String API_BASE_URL = "http://localhost:8080";
     private RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
@@ -23,7 +23,7 @@ public class AccountService {
         Account account = null;
 
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + id, HttpMethod.GET, makeAuthEntity(), Account.class);
+            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/" + id, HttpMethod.GET, makeAuthEntity(), Account.class);
             account = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -33,7 +33,7 @@ public class AccountService {
 
     }
     // Define the url path for finding by userID
-    public Account getAccountbyUserID( int userID) {
+    public Account getAccountbyUserID(int userID) {
         Account accountByUserID = null;
 
         try {
@@ -63,7 +63,7 @@ public class AccountService {
         HttpEntity<Account> entity = makeAccountEntity(newAccount);
 
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL, HttpMethod.POST, entity, Account.class);
+            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/", HttpMethod.POST,entity, Account.class);
             createdAccount = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -82,14 +82,14 @@ public class AccountService {
 
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
+        //headers.setBearerAuth(authToken);
         return new HttpEntity<>(headers);
     }
 
     private HttpEntity<Account> makeAccountEntity(Account account) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authToken);
+       // headers.setBearerAuth(authToken);
         return new HttpEntity<>(account, headers);
     }
 
