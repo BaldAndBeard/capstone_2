@@ -22,7 +22,7 @@ public class AccountController {
 
     private AccountDao accountDao;
 
-    public AccountController(TokenProvider tokenProvider, AuthenticationManagerBuilder authenticationManagerBuilder, AccountDao accountDao) {
+    public AccountController(AccountDao accountDao) {
 
         this.accountDao = accountDao;
     }
@@ -35,8 +35,6 @@ public class AccountController {
 
         if (user_id != 0) {
             listOfAccounts.add(accountDao.getAccountByUserId(user_id));
-        } else if (transfer_status_type.equals("Pending")) {
-            // listOfAccounts.add(accountDao.getAllPendingAccounts(transfer_status_type));
         } else {
             listOfAccounts = accountDao.getAccounts();
         }

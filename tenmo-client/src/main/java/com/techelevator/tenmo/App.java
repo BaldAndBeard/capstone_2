@@ -70,6 +70,7 @@ public class App {
         String token = currentUser.getToken();
         if (token != null) {
             accountService.setAuthToken(token);
+            transferService.setAuthToken(token);
         }
 
         if (currentUser == null) {
@@ -123,8 +124,15 @@ public class App {
 
 	private void viewPendingRequests() {
 		// TODO Auto-generated method stub
-		
-	}
+		Transfer[] pendingTransfers = transferService.getAllPendingTransfers();
+
+        System.out.println("**********************");
+        for (Transfer transfer : pendingTransfers) {
+            System.out.println("Transfer: " + transfer);
+        }
+        System.out.println("**********************");
+
+        }
 
 	private void sendBucks() {
 		// TODO Auto-generated method stub

@@ -41,7 +41,7 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public List<Transfer> getTransfers() {
+    public List<Transfer> getPendingTransfersByAccountID() {
         List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer";
         try {
@@ -57,19 +57,19 @@ public class JdbcTransferDao implements TransferDao {
     }
 
     @Override
-    public Transfer getTransferByUserId(int userId) {
+    public List<Transfer> getTransfersByAccountId(int accountId) {
 
-        Transfer transfer = null;
+        List<Transfer> transfers = null;
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer WHERE account_from = ? OR account_to = ?";
         try {
-            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, userId, userId);
-            if (rowSet.next()) {
-                transfer = mapRowToTransfer(rowSet);
+            SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId, accountId);
+            while (rowSet.next()) {
+                transfers.add(mapRowToTransfer(rowSet));
             }
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
         }
-        return transfer;
+        return transfers;
     }
 
     public Transfer createTransfer(Transfer transfer) {
@@ -105,6 +105,7 @@ public class JdbcTransferDao implements TransferDao {
         Transfer transfer = new Transfer();
         transfer.setTransferId(rs.getInt("transfer_id"));
         transfer.setTransferTypeId(rs.getInt("transfer_type_id"));
+        transfer.setTransferStatusId(rs.getInt("transfer_status_id"));
         transfer.setAccountFrom(rs.getInt("account_from"));
         transfer.setAccountTo(rs.getInt("account_to"));
         transfer.setAmount(rs.getBigDecimal("amount"));

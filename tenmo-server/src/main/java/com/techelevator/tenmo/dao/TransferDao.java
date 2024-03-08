@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.dao;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.Transfer;
 
 import java.util.List;
@@ -8,11 +7,11 @@ import java.util.List;
 public interface TransferDao {
 
 
-        List<Transfer> getTransfers();
+        List<Transfer> getPendingTransfersByAccountID();
 
         Transfer getTransferById(int id);
 
-        Transfer getTransferByUserId(int userId);
+        List<Transfer> getTransfersByAccountId(int accountId);
 
         Transfer createTransfer(Transfer transfer);
 

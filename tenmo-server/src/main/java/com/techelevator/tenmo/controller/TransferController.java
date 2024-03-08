@@ -17,17 +17,19 @@ public class TransferController {
 
     private TransferDao transferDao;
 
+    public TransferController(TransferDao transferDao) {
+        this.transferDao = transferDao;
+    }
+
         // Get a list of all accounts
         @RequestMapping(path = "", method = RequestMethod.GET)
         public List<Transfer> list(@RequestParam(defaultValue = "0") int account_id, @RequestParam(defaultValue = "") String transfer_status_type) {
             List<Transfer> listOfTransfers = new ArrayList<>();
 
             if (account_id != 0) {
-                listOfTransfers.add(transferDao.getTransferByUserId(account_id));
+                listOfTransfers = transferDao.getTransfersByAccountId(account_id);
             } else if (transfer_status_type.equals("Pending")) {
-                //listOfTransfers.add(transferDao.getAllPendingTransfers(transfer_status_type));
-            } else {
-                listOfTransfers = transferDao.getTransfers();
+                listOfTransfers = (transferDao.getPendingTransfersByAccountID());
             }
 
             return listOfTransfers;

@@ -109,8 +109,6 @@ public class JdbcAccountDao implements AccountDao{
         account.setId(rs.getInt("account_id"));
         account.setUserId(rs.getInt("user_id"));
         account.setBalance(rs.getBigDecimal("balance"));
-        //account.setActivated(true);
-        //account.setAuthorities("USER");
         return account;
     }
 

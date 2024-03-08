@@ -75,7 +75,7 @@ public class TransferService {
         Transfer[] allPendingTransfers = null;
 
          try {
-             ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?transfer_status='Pending'", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+             ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?transfer_status=Pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
              allPendingTransfers = response.getBody();
          } catch (RestClientResponseException | ResourceAccessException e) {
              BasicLogger.log(e.getMessage());
