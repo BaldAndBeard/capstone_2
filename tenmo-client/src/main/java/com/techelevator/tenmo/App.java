@@ -20,6 +20,7 @@ public class App {
 
 
     private AuthenticatedUser currentUser;
+    private Account userAccount;
 
     public static void main(String[] args) {
         App app = new App();
@@ -63,6 +64,7 @@ public class App {
     private void handleLogin() {
         UserCredentials credentials = consoleService.promptForCredentials();
         currentUser = authenticationService.login(credentials);
+        userAccount = accountService.getAccountbyUserID(currentUser.getUser().getId());
 
         // Obtain auth token from current user and assign it to the account service for communication
         String token = currentUser.getToken();
@@ -101,7 +103,7 @@ public class App {
 
 	private void viewCurrentBalance() {
 		// TODO Auto-generated method stub
-        Account userAccount = accountService.getAccountbyUserID(currentUser.getUser().getId());
+
         System.out.println("**********************");
         System.out.println("Your current balance is: " + userAccount.getBalance());
         System.out.println("**********************");
@@ -110,7 +112,13 @@ public class App {
 
 	private void viewTransferHistory() {
 		// TODO Auto-generated method stub
-		
+        Transfer[] userTransfers = transferService.getAllTransfersByAccountID(userAccount.getId());
+
+        System.out.println("**********************");
+        for (Transfer transfer : userTransfers) {
+            System.out.println("Transfer: " + transfer);
+        }
+        System.out.println("**********************");
 	}
 
 	private void viewPendingRequests() {

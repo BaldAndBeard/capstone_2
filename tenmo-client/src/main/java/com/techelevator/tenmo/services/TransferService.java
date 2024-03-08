@@ -30,13 +30,12 @@ public class TransferService {
        }
 
         return transfer;
-
     }
-    public Transfer[] getAllTransfersByUserID(int userId) {
-        Transfer[] transfers = null;
+    public Transfer[] getAllTransfersByAccountID(int accountID) {
+        Transfer[] transfers = new Transfer[]{};
 
         try {
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "/" + userId, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?account_id=" + accountID, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transfers = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
