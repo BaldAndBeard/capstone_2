@@ -89,11 +89,12 @@ public class JdbcAccountDao implements AccountDao{
         Account newAccount = null;
 
         String sql = "UPDATE account " +
-                "Set user_id = ?," +
-                "balance = ?, " +
-                "WHERE account_id = ?, " +
-                "VALUES (?, ?, ?);";
-        int newAccountId = jdbcTemplate.update(sql, account.getUserId(), STARTING_BALANCE, account.getId());
+                "Set account_id = ?, " +
+                "user_id = ?," +
+                "balance = ? " +
+                "WHERE account_id = ? " +
+                "RETURNING account_id;";
+        int newAccountId = jdbcTemplate.queryForObject(sql, int.class, account.getId(), account.getUserId(), account.getBalance(), account.getId());
         newAccount = getAccountById(newAccountId);
 
         return newAccount;

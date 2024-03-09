@@ -51,12 +51,11 @@ public class AccountService {
         HttpEntity<Account> entity = makeAccountEntity(accountToUpdate);
 
         try {
-            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL, HttpMethod.PUT, entity, Account.class);
+            ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/" + accountToUpdate.getId(), HttpMethod.PUT, entity, Account.class);
             updatedAccount = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
         }
-
         return updatedAccount;
     }
     public Account createAccount(Account newAccount) {

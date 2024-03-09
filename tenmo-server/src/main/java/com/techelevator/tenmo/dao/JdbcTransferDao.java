@@ -43,7 +43,7 @@ public class JdbcTransferDao implements TransferDao {
     @Override
     public List<Transfer> getPendingTransfersByAccountID() {
         List<Transfer> transfers = new ArrayList<>();
-        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer";
+        String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer WHERE transfer_status_id = 1";
         try {
             SqlRowSet results = jdbcTemplate.queryForRowSet(sql);
             while (results.next()) {
@@ -59,12 +59,13 @@ public class JdbcTransferDao implements TransferDao {
     @Override
     public List<Transfer> getTransfersByAccountId(int accountId) {
 
-        List<Transfer> transfers = null;
+        List<Transfer> transfers = new ArrayList<>();
         String sql = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount FROM transfer WHERE account_from = ? OR account_to = ?";
         try {
             SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql, accountId, accountId);
             while (rowSet.next()) {
-                transfers.add(mapRowToTransfer(rowSet));
+                Transfer transfer = mapRowToTransfer(rowSet);
+                transfers.add(transfer);
             }
         } catch (CannotGetJdbcConnectionException e) {
             throw new DaoException("Unable to connect to server or database", e);
@@ -75,9 +76,9 @@ public class JdbcTransferDao implements TransferDao {
     public Transfer createTransfer(Transfer transfer) {
         Transfer newTransfer = null;
 
-        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(?, ?, ?, ?, ?);";
-        int newAccountId = jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        newTransfer = getTransferById(newAccountId);
+        String sql = "INSERT INTO transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES(?, ?, ?, ?, ?) RETURNING transfer_id;";
+        int newTransferId = jdbcTemplate.queryForObject(sql, int.class, transfer.getTransferTypeId(), transfer.getTransferStatusId(), transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+        newTransfer = getTransferById(newTransferId);
 
         return newTransfer;
     }

@@ -31,6 +31,7 @@ public class TransferService {
 
         return transfer;
     }
+
     public Transfer[] getAllTransfersByAccountID(int accountID) {
         Transfer[] transfers = new Transfer[]{};
 
@@ -44,7 +45,7 @@ public class TransferService {
         return transfers;
     }
 
-    public Transfer addTransfer(Transfer transferToAdd) {
+    public Transfer createTransfer(Transfer transferToAdd) {
         Transfer newTransfer = null;
         HttpEntity<Transfer> entity = makeTransferEntity(transferToAdd);
 
@@ -58,24 +59,24 @@ public class TransferService {
         return newTransfer;
     }
 
-    public Transfer requestTransfer(Transfer transferToRequest){
-        Transfer requestedTransfer = null;
-        HttpEntity<Transfer> entity = makeTransferEntity(transferToRequest);
-
-        try {
-            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL, HttpMethod.POST, entity, Transfer.class);
-            requestedTransfer = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
-            BasicLogger.log(e.getMessage());
-        }
-
-        return requestedTransfer;
-    }
+//    public Transfer requestTransfer(Transfer transferToRequest){
+//        Transfer requestedTransfer = null;
+//        HttpEntity<Transfer> entity = makeTransferEntity(transferToRequest);
+//
+//        try {
+//            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL, HttpMethod.POST, entity, Transfer.class);
+//            requestedTransfer = response.getBody();
+//        } catch (RestClientResponseException | ResourceAccessException e) {
+//            BasicLogger.log(e.getMessage());
+//        }
+//
+//        return requestedTransfer;
+//    }
      public Transfer[] getAllPendingTransfers() {
         Transfer[] allPendingTransfers = null;
 
          try {
-             ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?transfer_status=Pending", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+             ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?transfer_status_id=1", HttpMethod.GET, makeAuthEntity(), Transfer[].class);
              allPendingTransfers = response.getBody();
          } catch (RestClientResponseException | ResourceAccessException e) {
              BasicLogger.log(e.getMessage());
@@ -84,6 +85,20 @@ public class TransferService {
 
         return allPendingTransfers;
      }
+
+    public Transfer updateTransfer(Transfer transferToUpdate) {
+
+        Transfer updatedTransfer = null;
+
+        try {
+            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + "/" + transferToUpdate.getTransferId(), HttpMethod.PUT, makeTransferEntity(transferToUpdate), Transfer.class);
+            updatedTransfer = response.getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
+
+        return updatedTransfer;
+    }
 
 
     private HttpEntity<Void> makeAuthEntity() {
@@ -98,5 +113,6 @@ public class TransferService {
         headers.setBearerAuth(authToken);
         return new HttpEntity<>(transfer, headers);
     }
+
 
 }

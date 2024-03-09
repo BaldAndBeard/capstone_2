@@ -40,6 +40,20 @@ public class JdbcUserDao implements UserDao {
     }
 
     @Override
+    public User getUserByAccountId(int accountId) {
+        User user = null;
+
+        String sql = "SELECT user_id, username, password_hash FROM tenmo_user WHERE user_id = " +
+                "(SELECT user_id FROM account WHERE account_id = ?)";
+
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, accountId);
+        if (results.next()){
+            user = mapRowToUser(results);
+        }
+        return user;
+    }
+
+    @Override
     public List<User> getUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT user_id, username, password_hash FROM tenmo_user";
