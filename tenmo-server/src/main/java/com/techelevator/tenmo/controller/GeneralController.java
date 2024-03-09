@@ -32,19 +32,17 @@ public class GeneralController {
     }
 
     // Get a list of all accounts
-
-    @RequestMapping(path = "/account", method = RequestMethod.GET)
-    public List<Account> listAccounts(@RequestParam(defaultValue = "0") int user_id, @RequestParam(defaultValue = "") String transfer_status_type) {
+       @RequestMapping(path = "/account", method = RequestMethod.GET)
+       public List<Account> listAccounts(@RequestParam(defaultValue = "0") int user_id) {
         List<Account> listOfAccounts = new ArrayList<>();
 
         if (user_id != 0) {
-            listOfAccounts.add(accountDao.getAccountByUserId(user_id));
-        } else {
-            listOfAccounts = accountDao.getAccounts();
-        }
-
+           listOfAccounts.add(accountDao.getAccountByUserId(user_id));
+       }
         return listOfAccounts;
-    }
+
+             }
+
 
     @RequestMapping(path = "/user", method = RequestMethod.GET)
     public List<User> listUsers(@RequestParam(defaultValue = "") String username) {
