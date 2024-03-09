@@ -8,7 +8,7 @@ public class Account {
     public Account(){}
     public Account(int id, int userId, BigDecimal balance){
         this.id = id;
-        this.userId = userId;
+        this.id = userId;
         this.balance = balance;
 
     }

@@ -6,7 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
-
+// Transfer Service Communicates with API in order to het data
 public class TransferService {
 
     public static final String API_BASE_URL = "http://localhost:8080/transfer";
@@ -19,24 +19,25 @@ public class TransferService {
 
     }
 
-   public Transfer getTransfer(int id) {
+    public Transfer getTransfer(int id) {
         Transfer transfer = null;
 
-       try {
-           ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + "/" + id, HttpMethod.GET, makeAuthEntity(), Transfer.class);
-           transfer = response.getBody();
-       } catch (RestClientResponseException | ResourceAccessException e) {
-           BasicLogger.log(e.getMessage());
-       }
+        try {
+            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL + "/" + id, HttpMethod.GET, makeAuthEntity(), Transfer.class);
+            transfer = response.getBody();
+
+        }catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
+        }
 
         return transfer;
     }
 
-    public Transfer[] getAllTransfersByAccountID(int accountID) {
+    public Transfer [] getAllTransferByAccountId(int accountId) {
         Transfer[] transfers = new Transfer[]{};
 
         try {
-            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?account_id=" + accountID, HttpMethod.GET, makeAuthEntity(), Transfer[].class);
+            ResponseEntity<Transfer[]> response = restTemplate.exchange(API_BASE_URL + "?account_id=" + accountId,HttpMethod.GET, makeAuthEntity(), Transfer[].class);
             transfers = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
@@ -59,19 +60,6 @@ public class TransferService {
         return newTransfer;
     }
 
-//    public Transfer requestTransfer(Transfer transferToRequest){
-//        Transfer requestedTransfer = null;
-//        HttpEntity<Transfer> entity = makeTransferEntity(transferToRequest);
-//
-//        try {
-//            ResponseEntity<Transfer> response = restTemplate.exchange(API_BASE_URL, HttpMethod.POST, entity, Transfer.class);
-//            requestedTransfer = response.getBody();
-//        } catch (RestClientResponseException | ResourceAccessException e) {
-//            BasicLogger.log(e.getMessage());
-//        }
-//
-//        return requestedTransfer;
-//    }
      public Transfer[] getAllPendingTransfers() {
         Transfer[] allPendingTransfers = null;
 
