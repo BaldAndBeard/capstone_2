@@ -33,7 +33,7 @@ public class TransferService {
         return transfer;
     }
 
-    public Transfer [] getAllTransferByAccountId(int accountId) {
+    public Transfer [] getAllTransfersByAccountID(int accountId) {
         Transfer[] transfers = new Transfer[]{};
 
         try {

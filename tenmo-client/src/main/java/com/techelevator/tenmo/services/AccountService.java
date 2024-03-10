@@ -6,6 +6,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 public class AccountService {
 
@@ -19,20 +20,21 @@ public class AccountService {
 
     }
 
-
     public Account getAccountByID(int id) {
         Account account = null;
+
 
         try {
             ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/" + id, HttpMethod.GET, makeAuthEntity(), Account.class);
             account = response.getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             BasicLogger.log(e.getMessage());
-        }
 
-        return  account;
+        }
+        return account;
 
     }
+
     // Define the url path for finding by userID
     public Account getAccountbyUserID(int userID) {
         Account[] accountByUserID = null;
@@ -46,18 +48,21 @@ public class AccountService {
 
         return accountByUserID[0];
     }
-    public Account updateAccount(Account accountToUpdate ) {
+    public Account updateAccount(Account accountToUpdate) {
         Account updatedAccount = null;
         HttpEntity<Account> entity = makeAccountEntity(accountToUpdate);
 
         try {
             ResponseEntity<Account> response = restTemplate.exchange(API_BASE_URL + "/" + accountToUpdate.getId(), HttpMethod.PUT, entity, Account.class);
             updatedAccount = response.getBody();
-        } catch (RestClientResponseException | ResourceAccessException e) {
+        }catch(ResourceAccessException | RestClientResponseException e){
             BasicLogger.log(e.getMessage());
+
+
         }
         return updatedAccount;
     }
+
     public Account createAccount(Account newAccount) {
         Account createdAccount = null;
         HttpEntity<Account> entity = makeAccountEntity(newAccount);
