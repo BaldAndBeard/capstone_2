@@ -88,10 +88,9 @@ public class JdbcTransferDao implements TransferDao {
         Transfer newTransfer = null;
 
         String sql = "UPDATE transfer " +
-                "SET transfer_status_id = ?, " +
-                "WHERE transfer_id = ?, " +
-                "VALUES (?, ?);";
-        int newTransferId = jdbcTemplate.update(sql, transfer.getTransferId(), transfer.getTransferStatusId());
+                "SET transfer_status_id = ? " +
+                "WHERE transfer_id = ?;";
+        int newTransferId = jdbcTemplate.update(sql, transfer.getTransferStatusId(), transfer.getTransferId());
         newTransfer = getTransferById(newTransferId);
 
         return newTransfer;

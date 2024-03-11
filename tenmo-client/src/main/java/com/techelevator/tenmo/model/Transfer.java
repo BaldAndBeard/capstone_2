@@ -1,8 +1,5 @@
 package com.techelevator.tenmo.model;
 
-import com.techelevator.tenmo.services.AccountService;
-import com.techelevator.tenmo.services.UserService;
-
 import java.math.BigDecimal;
 
 public class Transfer {
@@ -12,18 +9,18 @@ public class Transfer {
 
 
 
-    public void setUserAccount(Account userAccount) {
-        this.userAccount = userAccount;
+    public void setCurrentUserAccount(Account currentUserAccount) {
+        this.currentUserAccount = currentUserAccount;
     }
 
     private User currentUser;
-    private Account userAccount;
+    private Account currentUserAccount;
 
-    public void setRecipient(User recipient) {
-        this.recipient = recipient;
+    public void setSelectedUser(User recipient) {
+        this.selectedUser = recipient;
     }
 
-    private User recipient;
+    private User selectedUser;
 
     private int transferId;
 
