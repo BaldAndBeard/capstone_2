@@ -10,13 +10,12 @@ import org.springframework.web.client.RestTemplate;
 public class TransferService {
 
     public static final String API_BASE_URL = "http://localhost:8080/transfer";
-    private RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
     private String authToken = null;
 
     public void setAuthToken( String  authToken) {
         this.authToken = authToken;
-
     }
 
     public Transfer getTransfer(int id) {

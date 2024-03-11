@@ -3,24 +3,6 @@ package com.techelevator.tenmo.model;
 import java.math.BigDecimal;
 
 public class Transfer {
-    public void setCurrentUser(User currentUser) {
-        this.currentUser = currentUser;
-    }
-
-
-
-    public void setCurrentUserAccount(Account currentUserAccount) {
-        this.currentUserAccount = currentUserAccount;
-    }
-
-    private User currentUser;
-    private Account currentUserAccount;
-
-    public void setSelectedUser(User recipient) {
-        this.selectedUser = recipient;
-    }
-
-    private User selectedUser;
 
     private int transferId;
 
@@ -91,27 +73,10 @@ public class Transfer {
         this.transferStatusId = transferStatusId;
     }
 
-
     public void setAmount(BigDecimal amount){
         this.amount = amount;
     }
 
-
-//    @Override
-//    public String toString() {
-//
-//        User receiver = recipient;
-//        User sender = currentUser;
-//
-//        return "Transfer{" +
-//                "id =" + transferId +
-//                ", Sender ='" + receiver.getUsername() +
-//                ", Receiver =" + sender.getUsername() +
-//                ", Amount = " + amount +
-//                ", Transfer Type = " + transferTypeId +
-//                ", Transfer Status = " + transferStatusId +
-//                '}';
-//    }
 
 
 }

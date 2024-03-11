@@ -5,6 +5,8 @@ import com.techelevator.tenmo.services.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 
+import java.math.BigDecimal;
+
 public class App {
 
     private static final String API_BASE_URL = "http://localhost:8080/";
@@ -14,7 +16,6 @@ public class App {
     private final AccountService accountService = new AccountService();
     private final TransferService transferService = new TransferService();
     private final UserService userService = new UserService();
-
 
 
     private final Transfer transfer = new Transfer();
@@ -35,6 +36,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -44,7 +46,9 @@ public class App {
                 handleRegister();
             } else if (menuSelection == 2) {
                 handleLogin();
-            } else if (menuSelection != 0) {
+            } else if (menuSelection == 0) {
+                System.exit(1);
+            }else if (menuSelection != 0) {
                 System.out.println("Invalid Selection");
                 consoleService.pause();
             }
@@ -81,9 +85,6 @@ public class App {
         }
 
 
-
-
-
         if (token != null) {
             accountService.setAuthToken(token);
             transferService.setAuthToken(token);
@@ -113,30 +114,24 @@ public class App {
             } else if (menuSelection == 0) {
                 menuSelection = -1;
                 currentUser = null;
-                break;
+                loginMenu();
             } else {
                 System.out.println("Invalid Selection");
             }
             consoleService.pause();
         }
-
-        loginMenu();
     }
 
-	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
+    private void viewCurrentBalance() {
+        // TODO Auto-generated method stub
         System.out.println("**********************");
         System.out.println("Your current balance is: " + currentUserAccount.getBalance());
         System.out.println("**********************");
-	}
+    }
 
-	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+    private void viewTransferHistory() {
+        // TODO Auto-generated method stub
         Transfer[] userTransfers = transferService.getAllTransfersByAccountID(currentUserAccount.getId());
-
-//        transfer.setCurrentUser(currentUser.getUser());
-//        transfer.setUserAccount(userAccount);
-
 
         System.out.println("**********************");
         for (Transfer transfer : userTransfers) {
@@ -149,16 +144,14 @@ public class App {
                     ", Transfer Status = " + transfer.getTransferStatusId());
         }
         System.out.println("**********************");
-	}
+    }
 
-	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		Transfer[] pendingTransfers = transferService.getAllPendingTransfers();
+    private void viewPendingRequests() {
+        // TODO Auto-generated method stub
+        Transfer[] pendingTransfers = transferService.getAllPendingTransfers();
         Account selectedUserAccount = null;
         User selectedUser = null;
         Transfer transferToUpdate = null;
-
-
 
         System.out.println("**********************");
         for (Transfer transfer : pendingTransfers) {
@@ -177,7 +170,7 @@ public class App {
         System.out.println("**********************");
 
         // Check for valid selection
-        while (selectedUserAccount == null)    {
+        while (selectedUserAccount == null) {
 
             // Get Transfer by the ID the User types in
             int transferToUpdateID = consoleService.promptForInt("Type the Transfer ID you want to Approve or Reject, or Type 0 to Exit: ");
@@ -205,7 +198,6 @@ public class App {
 
                     }
                 }
-
             }
             // Print Warning to User is Account was not properly selected
             if (selectedUserAccount == null) {
@@ -224,8 +216,17 @@ public class App {
 
                 if (transferStatusId == 2 || transferStatusId == 3 || transferStatusId == 0) {
 
-                    // If they approve the transfer, update both user's account balance and update the transfer
+                    // If they approve the transfer
                     if (transferStatusId == 2) {
+
+                        // Compare the amount requested against current user's balance and reset loop if insufficient
+                        BigDecimal amountToSend = transferToUpdate.getAmount();
+                        if (amountToSend.compareTo(currentUserAccount.getBalance()) > 0) {
+                            System.out.println("Insufficient Funds");
+                            continue;
+                        }
+
+                        // Update both user's account balance and update the transfer
                         currentUserAccount.setBalance(currentUserAccount.getBalance().subtract(transferToUpdate.getAmount()));
                         selectedUserAccount.setBalance(selectedUserAccount.getBalance().add(transferToUpdate.getAmount()));
 
@@ -248,19 +249,15 @@ public class App {
                     } else if (transferStatusId == 0) {
                         break;
                     }
-
                 }
-
-
                 System.out.println("Invalid Selection");
                 transferStatusId = -1;
             }
         }
+    }
 
-        }
-
-	private void sendBucks() {
-		// TODO Auto-generated method stub
+    private void sendBucks() {
+        // TODO Auto-generated method stub
         Transfer newTransfer = new Transfer();
         Account selectedUserAccount = null;
         User selectedUser = null;
@@ -275,8 +272,11 @@ public class App {
         System.out.println("**********************");
 
         while (selectedUser == null) {
-            String userString = consoleService.promptForString("Type the name of the user you want to send to: ");
+            String userString = consoleService.promptForString("Type the name of the user you want to send to, or Type 0 to exit: ");
 
+            if (userString.equals("0")) {
+                break;
+            }
 
             if (!userString.equals(currentUser.getUser().getUsername())) {
                 // Get Username of recipient
@@ -285,7 +285,6 @@ public class App {
                 try {
 
                     selectedUser = userService.getUserByUsername(userString);
-                    transfer.setSelectedUser(selectedUser);
                     selectedUserAccount = accountService.getAccountbyUserID(selectedUser.getId());
 
                 } catch (NullPointerException e) {
@@ -296,28 +295,50 @@ public class App {
             }
         }
 
+        if (selectedUserAccount != null) {
 
-        // Assign values to the transfers
-        newTransfer.setTransferStatusId(2);
-        newTransfer.setTransferTypeId(2);
-        newTransfer.setAmount(consoleService.promptForBigDecimal("Enter amount you want to send: "));
-        newTransfer.setAccountFrom(currentUserAccount.getId());
-        newTransfer.setAccountTo(selectedUserAccount.getId());
+            BigDecimal amountToSend = null;
 
-        // Create new transfer in database
-        transferService.createTransfer(newTransfer);
+            while (amountToSend == null) {
 
-        // Update Balance in affected Accounts
-        currentUserAccount.setBalance(currentUserAccount.getBalance().subtract(newTransfer.getAmount()));
-        selectedUserAccount.setBalance(selectedUserAccount.getBalance().add(newTransfer.getAmount()));
+                amountToSend = consoleService.promptForBigDecimal("Enter amount you want to send: ");
 
-        // Update accounts in database
-        accountService.updateAccount(currentUserAccount);
-        accountService.updateAccount(selectedUserAccount);
-	}
+                if (amountToSend.compareTo(new BigDecimal("0")) > 0) {
 
-	private void requestBucks() {
-		// TODO Auto-generated method stub
+                    if (amountToSend.compareTo(currentUserAccount.getBalance()) > 0) {
+                        System.out.println("Insufficient Funds");
+                        amountToSend = null;
+                    }
+
+                } else {
+                    System.out.println("You must enter an amount greater than 0");
+                    amountToSend = null;
+                }
+            }
+
+            // Assign values to the transfers
+            newTransfer.setTransferStatusId(2);
+            newTransfer.setTransferTypeId(2);
+            newTransfer.setAmount(amountToSend);
+            newTransfer.setAccountFrom(currentUserAccount.getId());
+            newTransfer.setAccountTo(selectedUserAccount.getId());
+
+            // Create new transfer in database
+            transferService.createTransfer(newTransfer);
+
+            // Update Balance in affected Accounts
+            currentUserAccount.setBalance(currentUserAccount.getBalance().subtract(newTransfer.getAmount()));
+            selectedUserAccount.setBalance(selectedUserAccount.getBalance().add(newTransfer.getAmount()));
+
+            // Update accounts in database
+            accountService.updateAccount(currentUserAccount);
+            accountService.updateAccount(selectedUserAccount);
+
+        }
+    }
+
+    private void requestBucks() {
+        // TODO Auto-generated method stub
         Transfer newTransfer = new Transfer();
         Account selectedUserAccount = null;
         User selectedUser = null;
@@ -333,7 +354,11 @@ public class App {
 
         while (selectedUser == null) {
 
-            userString = consoleService.promptForString("Type the user you want to request from: ");
+            userString = consoleService.promptForString("Type the user you want to request from or type 0 to exit: ");
+
+            if (userString.equals("0")) {
+                break;
+            }
 
             if (!userString.equals(currentUser.getUser().getUsername())) {
 
@@ -341,21 +366,29 @@ public class App {
 
                     if (userString.equals(user.getUsername())) {
 
-
                         // Get Username of recipient
                         // Get user id based on username
                         // Get account id based on user id
                         selectedUser = userService.getUserByUsername(userString);
-                        transfer.setSelectedUser(selectedUser);
                         selectedUserAccount = accountService.getAccountbyUserID(selectedUser.getId());
 
+                        BigDecimal amountToRequest = null;
+                        while (amountToRequest == null) {
+                            amountToRequest = consoleService.promptForBigDecimal("Enter amount you want to request: ");
+
+                            if (amountToRequest.compareTo(new BigDecimal("0")) <= 0) {
+                                System.out.println("You must request an amount greater than 0");
+                                amountToRequest = null;
+                            }
+
+                        }
                         // Assign values to the transfers
                         // Assign Pending to transfer status id
                         newTransfer.setTransferStatusId(1);
                         // Assign Request to transfer type id
                         newTransfer.setTransferTypeId(1);
                         // Set the amount that you want to request
-                        newTransfer.setAmount(consoleService.promptForBigDecimal("Enter amount you want to request: "));
+                        newTransfer.setAmount(amountToRequest);
                         // Set the account that is being requested
                         newTransfer.setAccountFrom(selectedUserAccount.getId());
                         // Set the account that will receive money
@@ -366,17 +399,10 @@ public class App {
 
                         break;
                     }
-
                 }
-
             } else {
                 System.out.println("Invalid Selection");
             }
-
         }
-
-	}
-
-
-
+    }
 }
